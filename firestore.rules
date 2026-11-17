@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function validProgress() {
+      let data = request.resource.data;
+      let p = data.progress;
+      return data.keys().hasOnly(['progress', 'updatedAt'])
+        && data.updatedAt == request.time
+        && p.keys().hasOnly(['version','name','form','transliteration','vowels','goal','completed','cards','traced','activity','updatedAt'])
+        && p.version == 1
+        && p.name is string && p.name.size() <= 60
+        && p.form in ['m','f']
+        && p.transliteration is bool && p.vowels is bool
+        && p.goal in [20,30,50]
+        && p.completed is map && p.completed.size() <= 200
+        && p.cards is map && p.cards.size() <= 1000
+        && p.traced is list && p.traced.size() <= 27
+        && p.activity is map && p.activity.size() <= 730
+        && p.updatedAt is number;
+    }
+    match /users/{uid} {
+      allow get: if owner(uid);
+      allow create, update: if owner(uid) && validProgress();
+      allow delete: if owner(uid);
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
