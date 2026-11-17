@@ -11,6 +11,7 @@
 - Guest progress in localStorage, export/import backups, isolated account storage, and optional Google sign-in plus transactional Firestore sync.
 - Pronunciation and niqqud toggles, masculine/feminine examples, right-to-left Hebrew, and 13 grammar/culture reference notes.
 - Optional device Hebrew speech synthesis, an offline app shell, an installable web manifest, and a custom text-based Hebrew SVG icon.
+- Compact phone learning paths, a tracing-first letter studio, tablet navigation rail, short-window layouts, and iOS Home Screen support with the favicon artwork as the app icon.
 - Responsive layout, keyboard controls for lessons and letter quizzes, focus indicators, and reduced-motion support. No gradients, card borders, shadows, trackers, external fonts, or runtime framework dependencies.
 
 This is a complete **beginner application**, not a finished equivalent of Duolingo's multi-year curriculum. Advanced course expansion, native recordings, and professional Hebrew editorial review remain on the [roadmap](docs/ROADMAP.md). Tracing uses exact Noto Sans Hebrew print outlines, not authoritative cursive ductus. Speech depends on a Hebrew voice installed on the device.
@@ -62,7 +63,9 @@ Guest mode works immediately. The owner's Firebase web configuration for `binah-
 | `public/fonts/` | Self-hosted Noto Sans Hebrew subsets and SIL OFL license |
 | `scripts/generate-letter-assets.py` | Reproducible, development-only font asset generator |
 | `src/cloud.js` | Optional, dynamically loaded Firebase integration |
-| `src/styles.css` | Flat, rounded, responsive visual system |
+| `src/styles.css` | Flat, rounded visual system |
+| `src/responsive.css` | Phone/tablet/desktop density, safe areas, and lesson viewports |
+| `src/install.js` | Home Screen help, browser install prompt, visual viewport handling |
 | `public/config.js` | Owner's public Firebase web configuration |
 | `firestore.rules` | Private, per-user records and schema validation |
 | `docs/HEBREW_RESEARCH.md` | Research basis, language map, editorial conventions |

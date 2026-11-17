@@ -49,3 +49,15 @@ Further browser checks and any discovered fixes are recorded in the release comm
 - Update viewport QA: letter grid and tracing controls fit a 390 × 844 iframe (375 px client width, 375 px content width). Favicon inspected at 16, 32, and 192 pixels.
 
 - Fixed a local development-server crash on missing assets during rebuilds: files are now read before response headers are sent. Reloaded the app successfully after the fix. This helper is not part of the Cloudflare production runtime.
+
+## Responsive and Home Screen update — 17 November 2026
+
+- Fourteen Node tests pass. New checks validate Apple metadata, preserved pinch zoom, actual opaque PNG sizes, standalone manifest identity/scope, and offline caching of the new assets.
+- CSS viewport checks used 320×568, 375×667, 390×844, 430×932, 768×1024, 1024×768, 1366×768, 1920×1080, and 844×390. No horizontal overflow was observed in the tested learning/tracing layouts.
+- Learning path: 390×844, 430×932, 768×1024, 1366×768, and 1920×1080 fit without vertical page scrolling. Smaller phones retain natural vertical scrolling; the continuation action appears near the top. Short-window/tablet density was adjusted after measurement.
+- Tracing Check action is above the fixed phone navigation at 320×568, 375×667, and 390×844. Tablet and desktop tracing fit at 768×1024, 1024×768, 1366×768, and 1920×1080. Landscape tracing at 844×390 has no page overflow and its Check button ends at 323 px.
+- Native letter selector was exercised and changed the canvas from Alef to Bet. Optional alphabet/facts are collapsed on phones; reference notes start collapsed there.
+- Phone lessons use the actual visual viewport height. At 375×667, the lesson page has no document overflow and Continue/Check ends at 646 px. The 320×568 introduction action ends at 547 px. Phrase cards and a four-choice question were exercised.
+- Form input computed size was verified at 16 px on the phone viewport. No CSS scaling or `user-scalable=no` is used; user zoom remains available.
+- Home Screen instruction dialog opened and closed successfully. Icon PNG dimensions/opacity are verified by tests and all derive from the same favicon SVG. Actual Safari installation, iOS safe-area values, and the iOS software keyboard require a physical device or Apple simulator; these were not available in the browser environment.
+- `scripts/preview-viewports.mjs` creates a disposable local browser harness after a build. It is not copied to a production deployment.

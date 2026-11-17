@@ -100,3 +100,11 @@ Official sources: [Pages limits](https://developers.cloudflare.com/pages/platfor
 | Guest progress disappeared | It belongs to the exact browser profile and origin. Changing domains, private browsing, clearing site data, or browser eviction can remove it. Import a backup or use Google sync. |
 
 For custom domains, add the domain through Cloudflare Pages first, then authorize that exact hostname in Firebase. Progress stored on `pages.dev` does not automatically move to a custom origin: export/import or sign into Google before changing domains.
+
+## Add Binah to an iPhone or iPad Home Screen
+
+Open the deployed site in Safari, tap **Share → Add to Home Screen**, keep **Open as Web App** enabled if offered, and tap **Add**. Binah provides an opaque 180 × 180 Apple touch icon exported from the exact favicon SVG, a standalone manifest with 192/512 PNGs, an app title, and safe-area-aware layouts. Installation help is also in **Your space**.
+
+The website cannot silently add itself to iOS Home Screens; Safari handles the installation. Home Screen app state and ordinary Safari state can be separate. Google sync or an exported progress backup lets a learner move progress across those contexts. The icon PNGs are committed and copied by the normal build; Cloudflare needs no image-processing dependency.
+
+Official references: [Apple's iPhone instructions](https://support.apple.com/en-ca/guide/iphone/iphea86e5236/27/ios/27), [WebKit Home Screen app behavior](https://webkit.org/blog/13878/), and [WebKit safe-area guidance](https://webkit.org/blog/7929/designing-websites-for-iphone-x/).

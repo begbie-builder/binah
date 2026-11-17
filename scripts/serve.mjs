@@ -5,7 +5,7 @@ const root = resolve('dist');
 const args=process.argv.slice(2);
 const port=Number(args.includes('--port')?args[args.indexOf('--port')+1]:(process.env.PORT||5173));
 const host=args.includes('--host')?args[args.indexOf('--host')+1]:'0.0.0.0';
-const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.woff':'font/woff','.json':'application/json','.webmanifest':'application/manifest+json'};
+const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.woff':'font/woff','.json':'application/json','.webmanifest':'application/manifest+json'};
 http.createServer(async (req,res) => {
   try {
     const path = resolve(root, '.' + decodeURIComponent(new URL(req.url,'http://localhost').pathname));
