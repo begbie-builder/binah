@@ -61,3 +61,10 @@ Further browser checks and any discovered fixes are recorded in the release comm
 - Form input computed size was verified at 16 px on the phone viewport. No CSS scaling or `user-scalable=no` is used; user zoom remains available.
 - Home Screen instruction dialog opened and closed successfully. Icon PNG dimensions/opacity are verified by tests and all derive from the same favicon SVG. Actual Safari installation, iOS safe-area values, and the iOS software keyboard require a physical device or Apple simulator; these were not available in the browser environment.
 - `scripts/preview-viewports.mjs` creates a disposable local browser harness after a build. It is not copied to a production deployment.
+
+## iOS icon proportions — 17 November 2026
+
+- Corrected the icon export's nonuniform scaling: the old vertical scale was 2.3 times the horizontal scale. The font-derived wordmark now uses one scale factor, remains centered, and has room for the iOS mask.
+- SVG and all three opaque PNG sizes share the same artwork. The source has a full-bleed square background; the operating system supplies the Home Screen corner mask.
+- Updated the generator so future letter-asset exports retain these proportions. Versioned the icon/manifest URLs and refreshed the service-worker cache.
+- All 14 automated tests, JavaScript syntax checks, and the static build pass. Visually inspected the 512 px output; physical iOS rendering remains untested.

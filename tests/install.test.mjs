@@ -15,7 +15,7 @@ test('manifest launches within its stable scope and supplies real opaque PNG ico
   const data=await readFile(new URL('../public/'+path,import.meta.url));
   assert.equal(data.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(data.readUInt32BE(16),size);assert.equal(data.readUInt32BE(20),size);
   assert.equal(data[25],2,'RGB icons should be opaque, with no alpha channel');
-  if(size!==180)assert.ok(manifest.icons.some(i=>i.src==='/'+path&&i.sizes===`${size}x${size}`&&i.type==='image/png'));
+  if(size!==180)assert.ok(manifest.icons.some(i=>i.src.split('?')[0]==='/'+path&&i.sizes===`${size}x${size}`&&i.type==='image/png'));
  }
 });
 test('offline shell includes the responsive stylesheet, install controller, and Home Screen icons',async()=>{
