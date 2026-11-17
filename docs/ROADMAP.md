@@ -7,7 +7,7 @@ The current release is functional from guest onboarding through lessons, review,
 1. Educator review of all 128 entries, feminine variants, niqqud, full spelling, stress, and meaning; version each content correction.
 2. Licensed native recordings, listening discrimination, speed controls, and transcript reveal. Device speech is a fallback, not the content production plan.
 3. Explicit `unpointed` and allowed-answer fields instead of a small corpus-specific spelling map.
-4. Separate print-recognition and real handwriting guides, educator-reviewed shape models, optional stroke-by-stroke coaching.
+4. Develop the real handwriting curriculum separately from the implemented exact-font print tracing; have an educator review demonstration routes and add conventional stroke-by-stroke coaching.
 5. Longer multi-turn authored dialogues, learner-controlled prompts, and typing alternatives accepted by meaning rather than one surface string.
 6. Accessibility audit: contrast, keyboard/focus, screen readers, zoom, and equivalence of literacy activities.
 

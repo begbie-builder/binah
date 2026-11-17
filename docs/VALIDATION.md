@@ -35,3 +35,17 @@ Further browser checks and any discovered fixes are recorded in the release comm
 - Cloudflare production deployment needs the owner's Cloudflare-to-GitHub connection; the guide provides exact settings.
 - Hebrew device audio depends on an installed Hebrew voice. Native recordings and educator editorial sign-off are not included.
 - The course is introductory and not CEFR-certified. No fluency or mastery claim is supported by passing the lesson tests.
+
+
+## Font-tracing and motion update — 17 November 2026
+
+- Eleven automated tests pass, including rejection of the previous reversed Alef, rejection of a mirrored real Alef, bounds validation for all derived routes, and preservation of Yod/Vav/Lamed size relationships. Pointer-event tests cover empty coalesced-event lists, input isolation during replay, and no idle animation scheduling under reduced motion.
+- All 27 forms use actual Noto Sans Hebrew Bézier contours. Standalone SVGs and the same self-hosted font ship with the app; font license is included.
+- Browser check: blank Yod fails; pointer-traced Yod reaches 13/13 checkpoints and succeeds; undo removes coverage; Clear resets; demonstration does not count as learner input.
+- Letter-name selection, navigation, and live checkpoint progress were checked on desktop.
+- Motion uses transform/opacity transitions and short feedback sequences. CSS animations, WAAPI effects, demonstration replay, and canvas pulse all honor the device's reduced-motion preference. Physical reduced-motion device testing remains separate from source-level checks.
+- Firebase public web configuration was supplied by the owner and connected. Live OAuth and cross-device Firestore writes still require owner sign-in; no account was created or impersonated during this update.
+
+- Update viewport QA: letter grid and tracing controls fit a 390 × 844 iframe (375 px client width, 375 px content width). Favicon inspected at 16, 32, and 192 pixels.
+
+- Fixed a local development-server crash on missing assets during rebuilds: files are now read before response headers are sent. Reloaded the app successfully after the fix. This helper is not part of the Cloudflare production runtime.

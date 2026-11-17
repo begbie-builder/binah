@@ -26,9 +26,9 @@ Do not force learners to finish the alphabet before saying hello. A separate let
 
 ### Print is not handwriting
 
-Square/print Hebrew, everyday handwriting, Rashi type, and historical scripts are distinct visual systems. The shipped tracing guides are original, simplified monoline **print-shape exercises**. The numbers are a suggested practice sequence, not a claim of one universal Hebrew stroke order. Correct handwriting requires a dedicated curriculum and educator-reviewed models.
+Square/print Hebrew, everyday handwriting, Rashi type, and historical scripts are distinct visual systems. The tracing board uses exact Noto Sans Hebrew font outlines, with checkpoints derived from the center of the same glyph. The self-hosted reading font, displayed silhouette, and generated SVG files share that geometry. Numbers and the replay animation suggest routes through a print shape, not one universal Hebrew handwriting stroke order. Correct handwriting requires a dedicated curriculum and educator-reviewed models.
 
-The feedback algorithm samples the guide and drawn strokes. At least 78% guide coverage and 72% on-guide precision are required. Short marks and large off-guide scribbles fail. It does not evaluate pen pressure, elegance, conventional ductus, or general handwriting competence. A keyboard-accessible letter-name quiz supplies another way to practice; it does not make the drawing canvas itself keyboard-operable.
+The feedback algorithm samples the guide and drawn strokes. At least 86% checkpoint coverage and 80% on-guide precision are required. Short marks and large off-guide scribbles fail. It does not evaluate pen pressure, elegance, conventional ductus, or general handwriting competence. A keyboard-accessible letter-name quiz supplies another way to practice; it does not make the drawing canvas itself keyboard-operable.
 
 ## 3. Sound before transliteration dependence
 
@@ -116,7 +116,7 @@ Review uses a simple box schedule: correct recalls advance through 1, 3, 7, 14, 
 - Add reviewed, separately authored distractors. The current lesson choices reuse the lesson's phrase meanings; review distractors draw from the wider corpus. They are functional but not pedagogically optimized minimal pairs.
 - Add authentic native recordings with documented licensing and separate speaker/addressee metadata. Do not scrape dictionaries or course audio without rights.
 - Test with actual beginners: can they use a phrase without seeing English? Can they distinguish a letter on a sign? Can they ask for clarification under mild conversational pressure?
-- Review simplified print guides and develop a separate handwriting course. Give disabled learners equivalent non-drawing literacy practice.
+- Review the derived print-shape routes and develop a separate handwriting course. Give disabled learners equivalent non-drawing literacy practice.
 - Add all weekdays and practical numbers before claiming independent scheduling or money competence; teach grammatical agreement rather than giving a bare list.
 - Expand into healthcare vocabulary and emergencies only with expert-reviewed wording and locally verified service information; do not market an introductory phrasebook as a safety tool.
 
@@ -133,4 +133,4 @@ Review uses a simple box schedule: correct recalls advance through 1, 3, 7, 14, 
 9. [University of Texas at Austin — Hebrew tutorials](https://hebrew.laits.utexas.edu/tutorials.html) — broader curriculum coverage index. Some older interactive resources are not accessible as text; no claim is made to have reviewed their hidden exercise contents.
 10. [Pealim — inflection dictionary](https://www.pealim.com/) — ongoing reference for future word-by-word editorial checks; no automated scraping or copied corpus is included.
 
-No source claims to endorse Binah. The course structure, activities, review schedule, code, and trace guides are original implementation decisions. Research is a basis for design, not a replacement for linguistic editorial review.
+No source claims to endorse Binah. The course structure, activities, review schedule, code, and derived trace routes are implementation decisions. Research is a basis for design, not a replacement for linguistic editorial review.

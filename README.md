@@ -6,14 +6,14 @@
 
 - 32 original, structured beginner lessons in 8 units; 128 phrase entries, including repeated phrases in new contexts.
 - Context notes, phrase cards, meaning checks, word building, Hebrew typing with an on-screen keyboard, and real-life response choices.
-- A separate alphabet tab: 22 letters, 5 final forms, names, sounds, vowel marks, mouse/touch/pen tracing, undo, and shape feedback.
+- A separate alphabet tab: 22 letters, 5 final forms, names, sounds, vowel marks, exact font-outline tracing, precise checkpoints, animated demonstrations, live progress, undo, and shape feedback.
 - Sequential lesson unlocks, a 70% completion threshold, XP, daily intentions, calendar-day streaks, and mistake-aware spaced review.
 - Guest progress in localStorage, export/import backups, isolated account storage, and optional Google sign-in plus transactional Firestore sync.
 - Pronunciation and niqqud toggles, masculine/feminine examples, right-to-left Hebrew, and 13 grammar/culture reference notes.
 - Optional device Hebrew speech synthesis, an offline app shell, an installable web manifest, and a custom text-based Hebrew SVG icon.
 - Responsive layout, keyboard controls for lessons and letter quizzes, focus indicators, and reduced-motion support. No gradients, card borders, shadows, trackers, external fonts, or runtime framework dependencies.
 
-This is a complete **beginner application**, not a finished equivalent of Duolingo's multi-year curriculum. Advanced course expansion, native recordings, and professional Hebrew editorial review remain on the [roadmap](docs/ROADMAP.md). Tracing uses simplified print shapes, not authoritative cursive ductus. Speech depends on a Hebrew voice installed on the device.
+This is a complete **beginner application**, not a finished equivalent of Duolingo's multi-year curriculum. Advanced course expansion, native recordings, and professional Hebrew editorial review remain on the [roadmap](docs/ROADMAP.md). Tracing uses exact Noto Sans Hebrew print outlines, not authoritative cursive ductus. Speech depends on a Hebrew voice installed on the device.
 
 ## Run it
 
@@ -46,7 +46,7 @@ Follow [the complete Cloudflare Pages + Firebase setup guide](docs/SETUP.md). Sh
 | Root directory | Leave empty (repository root) |
 | Environment variable | `NODE_VERSION=22` |
 
-Guest mode works immediately. To enable Google, create a Firebase Spark project, enable the Google provider, create a Firestore Standard database, publish **the provided rules**, authorize your exact site hostname, and put your **public web config** in `public/config.js`. No server key, paid server, Cloud Functions, or billing upgrade is required for this architecture within the relevant free quotas.
+Guest mode works immediately. The owner's Firebase web configuration for `binah-a5d15` is connected in `public/config.js`. For another deployment, create a Firebase Spark project, enable the Google provider, create a Firestore Standard database, publish **the provided rules**, authorize your exact site hostname, and put your **public web config** in `public/config.js`. No server key, paid server, Cloud Functions, or billing upgrade is required for this architecture within the relevant free quotas.
 
 ## Project guide
 
@@ -56,7 +56,11 @@ Guest mode works immediately. To enable Google, create a Firebase Spark project,
 | `src/alphabet.js` | Letter information, print guides, vowel marks |
 | `src/engine.js` | Safe progress handling, merges, review intervals, sessions |
 | `src/app.js` | Interface and interactions |
-| `src/trace.js` | Pointer drawing and shape scoring |
+| `src/trace.js` | Exact-glyph pointer drawing, checkpoint scoring, and replay |
+| `src/letter-geometry.js` | Generated vector outlines and centerline routes |
+| `src/motion.js` | Lightweight view transitions, feedback, celebrations |
+| `public/fonts/` | Self-hosted Noto Sans Hebrew subsets and SIL OFL license |
+| `scripts/generate-letter-assets.py` | Reproducible, development-only font asset generator |
 | `src/cloud.js` | Optional, dynamically loaded Firebase integration |
 | `src/styles.css` | Flat, rounded, responsive visual system |
 | `public/config.js` | Owner's public Firebase web configuration |

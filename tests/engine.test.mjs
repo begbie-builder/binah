@@ -35,3 +35,15 @@ test('all 27 tracing guides pass with their correct path; blank/short/off-target
  assert.equal(scoreTrace(alphabet[0].strokes,[[[0,0],[100,0],[100,100],[0,100],[0,0]]]).pass,false);
  assert.equal(scoreTrace(alphabet[0].strokes,[alphabet[0].strokes[0]]).pass,false);
 });
+test('font-based Alef rejects the previous reversed silhouette and mirrored geometry',()=>{
+ const alef=alphabet.find(x=>x.char==='א');
+ const oldGuide=[[[75,20],[25,80]],[[30,22],[48,43]],[[53,57],[74,78]]];
+ assert.equal(scoreTrace(alef.strokes,oldGuide).pass,false);
+ assert.equal(scoreTrace(alef.strokes,alef.strokes.map(s=>s.map(([x,y])=>[100-x,y]))).pass,false);
+ assert.ok(alef.path.includes('Q'),'Preserve actual Bézier curves');
+});
+test('all checkpoint routes sit inside their own font bounds and preserve relative letter size',()=>{
+ for(const l of alphabet){const [x,y,w,h]=l.bounds;assert.ok(l.path.length>30);for(const stroke of l.strokes)for(const [px,py] of stroke){assert.ok(px>=x-.4&&px<=x+w+.4&&py>=y-.4&&py<=y+h+.4,l.name);}}
+ const yod=alphabet.find(l=>l.char==='י'),vav=alphabet.find(l=>l.char==='ו'),lamed=alphabet.find(l=>l.char==='ל');
+ assert.ok(yod.bounds[3]<vav.bounds[3]*.7,'Yod stays shorter than Vav');assert.ok(lamed.bounds[1]<vav.bounds[1],'Lamed rises above the common roof');
+});

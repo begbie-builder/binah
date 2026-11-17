@@ -1,6 +1,10 @@
-// Firebase WEB app configuration is public. Never paste service-account keys here.
-// Guest mode works with this unset. Follow docs/SETUP.md to enable Google sign-in.
-window.BINAH_FIREBASE_CONFIG = null;
-// Replace null with the web app config object from Firebase Project settings.
-// { apiKey: '...', authDomain: 'YOUR_PROJECT.firebaseapp.com',
-//   projectId: 'YOUR_PROJECT', appId: '...' }
+// Public Firebase WEB application configuration supplied by the project owner.
+// This is not an Admin SDK credential. Database access is controlled by Firestore rules.
+window.BINAH_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCWgTYtPbsSC6Wkj1vEIw4gjXcLyvK0jX8",
+  authDomain: "binah-a5d15.firebaseapp.com",
+  projectId: "binah-a5d15",
+  storageBucket: "binah-a5d15.firebasestorage.app",
+  messagingSenderId: "1097549411185",
+  appId: "1:1097549411185:web:e6a5585e3dd40fb735bcd0"
+};
