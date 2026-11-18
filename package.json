@@ -1,6 +1,6 @@
 {
   "name": "binah", "version": "1.0.0", "private": true, "type": "module",
   "description": "Practical Modern Hebrew, one conversation at a time.",
-  "scripts": {"dev": "node scripts/serve.mjs", "build": "node scripts/build.mjs", "test": "node --test tests/*.test.mjs", "check": "node --check src/app.js && node --check src/cloud.js && node --check src/trace.js && node --check src/engine.js && node --check src/curriculum.js && node --check src/install.js && node --check src/motion.js && node --check src/letter-geometry.js"},
+  "scripts": {"dev": "node scripts/serve.mjs", "build": "node scripts/build.mjs", "test": "node --test tests/*.test.mjs", "check": "node --check src/app.js && node --check src/cloud.js && node --check src/trace.js && node --check src/hebrew-writer-data.js && node --check src/vendor/hanzi-writer/hanzi-writer.js && node --check src/engine.js && node --check src/curriculum.js && node --check src/install.js && node --check src/motion.js && node --check src/letter-geometry.js"},
   "engines": {"node": ">=22"}
 }

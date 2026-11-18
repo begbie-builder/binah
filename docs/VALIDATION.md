@@ -68,3 +68,15 @@ Further browser checks and any discovered fixes are recorded in the release comm
 - SVG and all three opaque PNG sizes share the same artwork. The source has a full-bleed square background; the operating system supplies the Home Screen corner mask.
 - Updated the generator so future letter-asset exports retain these proportions. Versioned the icon/manifest URLs and refreshed the service-worker cache.
 - All 14 automated tests, JavaScript syntax checks, and the static build pass. Visually inspected the 512 px output; physical iOS rendering remains untested.
+
+## Hebrew Writer rebuild — 17 November 2026
+
+- Integrated the published Hanzi Writer 3.7.3 SVG renderer, animation system, and stroke quiz engine, with its full MIT license and provenance note retained. Only locally generated Hebrew data is loaded. No Chinese character data is shipped.
+- Authored practice medians and instructions for 27 Hebrew print forms. The generator partitions the original Noto Sans Hebrew contours into stroke silhouettes, with <= .035 practice-unit curve flattening. It asserts that the union reproduces each glyph. These are guided print paths, not a claim of mandatory universal Hebrew handwriting order.
+- Stroke-by-stroke acceptance replaces the former accumulated checkpoint score. Guided mode, recall mode, direction feedback, automatic hints after two misses, individual Hint, replay, restart, completion, and the existing one-time XP award are integrated.
+- Live browser drawing: Alef diagonal accepted; replay retained 1/3; reversed upper-right stroke rejected with a direction hint; forward stroke accepted; final stroke completed the letter and awarded XP. Also drew accepted first strokes in both 390×844 guided and recall surfaces. Hint in recall preserved 0/3 progress.
+- All 27 forms were selected and rendered in the browser without an application error. Browser-extension metadata errors were unrelated to the app.
+- Checked 320×568, 375×667, 390×844, 430×932, 768×1024, 1024×768, 1366×768, 1920×1080, and 844×390. No horizontal app overflow. Small-phone tools end at 503.5px, just above the 504px navigation edge; 375px phone tools end at 531.4px before its 603px navigation edge. Optional alphabet/details content still scrolls naturally.
+- Final landscape check at 844×390: client and content widths are both 844px; client and content heights are both 390px.
+- 17 tests pass. New checks cover jitter tolerance, reverse/partial/reordered strokes across every form, live-data grading, coalesced pointer input, primary-pointer capture, final input samples, cancellation, and listener cleanup. Syntax checks and the static build pass.
+- Physical iOS/Apple Pencil behavior and physical Safari installation remain untested in this Chrome-based environment. Reduced-motion handling uses a static Watch preview and a Back to writing action.

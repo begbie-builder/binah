@@ -79,3 +79,13 @@ Guests have no remote account and make no Firebase requests. Progress lives unde
 The reset control clears a progress record, not the Google identity itself. On shared devices, signing out returns to the existing local guest profile. The guest copy remains available after account migration. Use a separate browser profile if several learners share one computer.
 
 All teaching content is original; linked sources are references, not copied curricula. The Binah name and icon have not had a trademark clearance search.
+
+## Hebrew Writer
+
+The letter studio now uses the real **Hanzi Writer 3.7.3** SVG/quiz engine, adapted under its MIT license. All 27 Hebrew print forms use local Hebrew-only stroke silhouettes, authored medians, and per-stroke instructions. Guided mode shows the next route and start marker; From memory hides the outline. Strokes check immediately on release, incorrect strokes fade, and accepted strokes resolve to the font silhouette. Watch and Hint never earn progress.
+
+Engine provenance and modifications: [`src/vendor/hanzi-writer/README.md`](src/vendor/hanzi-writer/README.md). Original copyright and the complete MIT license are retained. Hebrew outlines derive from Noto Sans Hebrew (OFL), not Hanzi Writer's separately licensed Chinese character data.
+
+To edit a Hebrew practice route, update `scripts/data/hebrew-print-strokes.json`, then run `python scripts/generate-hebrew-writer.py` (development only: fonttools and shapely >= 2.1). This partitions the detailed font contour by the nearest median and verifies that the stroke union reproduces the glyph. The generated `src/hebrew-writer-data.js` is committed; deployment needs only the usual static build.
+
+These are consistent **print-letter** practice paths. Hebrew teachers and handwriting habits vary; the app does not claim a mandatory universal stroke order or teach everyday cursive in this mode.

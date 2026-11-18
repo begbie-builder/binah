@@ -1,84 +1,87 @@
-// All coordinates are in the same 100 × 100 space as the exact font outline.
-export function sampleStrokes(strokes,step=1) {
- const points=[];for(const stroke of strokes)for(let i=1;i<stroke.length;i++){
-  const a=stroke[i-1],b=stroke[i],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/step));
-  for(let j=0;j<n;j++)points.push([a[0]+(b[0]-a[0])*j/n,a[1]+(b[1]-a[1])*j/n]);points.push(b);
- }return points;
-}
-export function checkpointsFor(strokes,spacing=2.6){
- const result=[];strokes.forEach((stroke,route)=>{
-  if(!stroke.length)return;result.push({point:stroke[0],route});let remaining=spacing;
-  for(let i=1;i<stroke.length;i++){
-   const start=stroke[i-1],end=stroke[i];let distance=Math.hypot(end[0]-start[0],end[1]-start[1]);let at=[...start];
-   while(distance>=remaining&&distance>0){const t=remaining/distance;at=[at[0]+(end[0]-at[0])*t,at[1]+(end[1]-at[1])*t];result.push({point:at,route});distance-=remaining;remaining=spacing;}
-   remaining-=distance;
-  }
-  const last=stroke.at(-1);if(Math.hypot(last[0]-result.at(-1).point[0],last[1]-result.at(-1).point[1])>1)result.push({point:last,route});
- });return result;
-}
-const close=(p,points,r)=>points.some(q=>(p[0]-q[0])**2+(p[1]-q[1])**2<=r*r);
+import HanziWriter, {strokeMatches, parseCharData} from './vendor/hanzi-writer/hanzi-writer.js';
+import {hebrewWriterData} from './hebrew-writer-data.js';
+
+// Same matcher and tolerances as the interactive quiz, in Hanzi Writer's units.
+export const HEBREW_TOLERANCES={leniency:1.1,averageDistanceThreshold:145,startAndEndDistanceThreshold:115};
+const toInternal=([x,y])=>({x:(50+(x-50)*1.12)*10.24,y:900-(50+(y-50)*1.12)*10.24});
 export function scoreTrace(guide,drawn){
- const checkpoints=checkpointsFor(guide),ink=sampleStrokes(drawn,.65),target=sampleStrokes(guide,.65);
- const hits=checkpoints.map(c=>close(c.point,ink,3.2));
- if(ink.length<8)return {coverage:0,precision:0,pass:false,hits:checkpoints.map(()=>false),reached:0,total:checkpoints.length};
- const coverage=hits.filter(Boolean).length/Math.max(1,checkpoints.length);
- const precision=ink.filter(p=>close(p,target,4.2)).length/ink.length;
- return {coverage:Math.round(coverage*100),precision:Math.round(precision*100),pass:coverage>=.86&&precision>=.8,hits,reached:hits.filter(Boolean).length,total:checkpoints.length};
-}
-export function mountTrace(canvas,letter,onResult,{onChange=()=>{}}={}){
- const ctx=canvas.getContext('2d'),glyph=new Path2D(letter.path),checkpoints=checkpointsFor(letter.strokes);
- const reduced=matchMedia('(prefers-reduced-motion: reduce)');
- let paths=[],pointer=null,frame=0,disposed=false,demoStart=null,celebrate=0,visible=true;
- let result=scoreTrace(letter.strokes,paths);
- const observer=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible)paint(performance.now());else cancelAnimationFrame(frame);}):null;
- observer?.observe(canvas);
- const point=e=>{const r=canvas.getBoundingClientRect();return [(e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100];};
- function line(strokes,color,width){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';for(const path of strokes){if(!path.length)continue;ctx.beginPath();path.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));if(path.length===1)ctx.lineTo(path[0][0]+.01,path[0][1]);ctx.stroke();}}
- function dot(p,r,color){ctx.beginPath();ctx.fillStyle=color;ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();}
- const demoRoutes=letter.strokes.map(s=>sampleStrokes([s],.5));
- const demoLength=demoRoutes.reduce((n,s)=>n+s.length,0);
- function paint(now=performance.now()){
-  if(disposed||!canvas.isConnected)return;cancelAnimationFrame(frame);
-  const scale=canvas.width/100;ctx.setTransform(scale,0,0,scale,0,0);ctx.clearRect(0,0,100,100);
-  // The silhouette comes directly from the font's Bézier outline, with no mirroring.
-  ctx.fillStyle='#dde5d7';ctx.fill(glyph);
-  line(paths,'#c58f73',2.8);
-  ctx.save();ctx.clip(glyph);line(paths,'#426953',7.2);
-  if(demoStart!==null){
-   const phase=(now-demoStart)/2800;const elapsed=reduced.matches?1:Math.min(phase,1);let count=Math.ceil(elapsed*demoLength),tip=null;ctx.globalAlpha=reduced.matches?1:phase>1.25?Math.max(0,1-(phase-1.25)/.2):1;
-   for(const route of demoRoutes){const part=route.slice(0,Math.max(0,count));if(part.length){line([part],'#789567',11);tip=part.at(-1);}count-=route.length;}
-   if(tip)dot(tip,1.8,'#f8f3df');ctx.globalAlpha=1;if(reduced.matches||phase>=1.45)demoStart=null;
-  }
-  ctx.restore();
-  checkpoints.forEach((c,i)=>dot(c.point,result.hits[i]?.valueOf()?1:.62,result.hits[i]?'#244e3d':'#f9fbf5'));
-  if(demoStart===null){
-   const next=checkpoints.find((_,i)=>!result.hits[i]);
-   if(next){const r=1.55+(pointer===null&&!reduced.matches?Math.sin(now/260)*.18:0);ctx.strokeStyle='#b98f56';ctx.lineWidth=.45;ctx.beginPath();ctx.arc(...next.point,r,0,Math.PI*2);ctx.stroke();}
-   letter.strokes.forEach((route,i)=>{const p=route[0];ctx.font='600 2.4px system-ui';ctx.fillStyle='#647758';ctx.textAlign='center';ctx.fillText(String(i+1),p[0],Math.max(4,p[1]-3.3));});
-  }
-  if(celebrate&&!reduced.matches){const t=Math.min((now-celebrate)/650,1);ctx.globalAlpha=1-t;ctx.strokeStyle='#93aa71';ctx.lineWidth=.7;const [x,y,w,h]=letter.bounds;ctx.beginPath();ctx.ellipse(x+w/2,y+h/2,w/2+3+t*6,h/2+3+t*6,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;if(t>=1)celebrate=0;}
-  if((demoStart!==null||celebrate||(!reduced.matches&&pointer===null&&!result.pass))&&visible&&!document.hidden)frame=requestAnimationFrame(paint);
+ const character=parseCharData('',{strokes:guide.map(()=>''),medians:guide.map(s=>s.map(p=>{const q=toInternal(p);return [q.x,q.y];}))});
+ let reached=0;
+ for(let i=0;i<Math.min(guide.length,drawn.length);i++){
+  if(!strokeMatches({points:drawn[i].map(toInternal)},character,i,{...HEBREW_TOLERANCES,isOutlineVisible:true}).isMatch)break;
+  reached++;
  }
- function refresh(){result=scoreTrace(letter.strokes,paths);onChange(result);paint();}
- function stopDemo(){demoStart=null;}
- canvas.onpointerdown=e=>{
-  if(pointer!==null||!e.isPrimary||e.button!==0)return;pointer=e.pointerId;stopDemo();canvas.setPointerCapture(e.pointerId);paths.push([point(e)]);refresh();
- };
- canvas.onpointermove=e=>{
-  if(e.pointerId!==pointer)return;const coalesced=e.getCoalescedEvents?.();const events=coalesced?.length?coalesced:[e],path=paths.at(-1);
-  for(const item of events){const p=point(item),prev=path.at(-1);if(Math.hypot(p[0]-prev[0],p[1]-prev[1])>.2&&path.length<3000)path.push(p);}refresh();
- };
- canvas.onpointerup=e=>{if(e.pointerId!==pointer)return;paths.at(-1).push(point(e));pointer=null;refresh();};
- canvas.onpointercancel=e=>{if(e.pointerId===pointer){pointer=null;refresh();}};
- const visibility=()=>{if(document.hidden)cancelAnimationFrame(frame);else paint();};document.addEventListener('visibilitychange',visibility);
- const mediaChange=()=>paint();reduced.addEventListener('change',mediaChange);
- refresh();
+ return {pass:reached===guide.length&&drawn.length===guide.length,coverage:Math.round(reached/guide.length*100),precision:Math.round(reached/Math.max(1,drawn.length)*100),reached,total:guide.length};
+}
+
+// Hanzi Writer supplies SVG stroke reveal, smooth learner ink and per-stroke
+// directional/shape grading. Only locally authored Hebrew data is loaded.
+export function mountTrace(host,letter,onResult,{onChange=()=>{},onFeedback=()=>{}}={}){
+ const data=hebrewWriterData[letter.char],total=data.medians.length;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ let completed=0,mistakes=0,mode='guided',disposed=false,watching=false,operation=0,hinted=false;
+ const svgNS='http://www.w3.org/2000/svg';
+ const overlay=document.createElementNS(svgNS,'svg');
+ overlay.setAttribute('viewBox','0 0 100 100');overlay.setAttribute('aria-hidden','true');overlay.classList.add('trace-guide-overlay');
+ const size=()=>Math.max(1,host.getBoundingClientRect().width);
+ const writer=HanziWriter.create(host,letter.char,{
+  width:size(),height:size(),padding:0,showCharacter:false,showOutline:true,
+  charDataLoader:()=>({strokes:data.strokes,medians:data.medians}),
+  strokeColor:'#254d43',outlineColor:'#dde5d7',highlightColor:'#a6b77b',highlightCompleteColor:'#6c9058',drawingColor:'#254d43',
+  drawingWidth:Math.max(3,size()*.016),drawingFadeDuration:reduced.matches?0:160,
+  strokeFadeDuration:reduced.matches?0:130,strokeAnimationSpeed:1.2,delayBetweenStrokes:260,
+  strokeHighlightSpeed:1.1,strokeHighlightDuration:reduced.matches?0:170,
+  highlightOnComplete:!reduced.matches,acceptBackwardsStrokes:false,showHintAfterMisses:2,markStrokeCorrectAfterMisses:false,
+  ...HEBREW_TOLERANCES
+ });
+ writer.target.node.setAttribute('aria-hidden','true');
+ host.append(overlay);
+ function snapshot(){return {pass:completed===total,coverage:Math.round(completed/total*100),reached:completed,total,mistakes,mode,watching,preview:watching&&reduced.matches,instruction:data.instructions[Math.min(completed,total-1)]};}
+ function renderGuide(){
+  overlay.replaceChildren();
+  if(watching||completed===total||mode==='recall'&&!hinted)return;
+  const route=data.guides[completed],start=route[0];
+  const path=document.createElementNS(svgNS,'path');
+  path.setAttribute('d','M'+route.map(p=>p.join(',')).join('L'));path.classList.add('trace-route');overlay.append(path);
+  // Direction chevron follows the actual first segment, separate from the start.
+  let dist=0,tip=route.at(-1),before=start;
+  for(let i=1;i<route.length;i++){const d=Math.hypot(route[i][0]-route[i-1][0],route[i][1]-route[i-1][1]);if(dist+d>=10){const t=(10-dist)/d;before=route[i-1];tip=[before[0]+(route[i][0]-before[0])*t,before[1]+(route[i][1]-before[1])*t];break;}dist+=d;}
+  const a=Math.atan2(tip[1]-before[1],tip[0]-before[0]);
+  const arrow=document.createElementNS(svgNS,'path');arrow.setAttribute('d',`M${tip[0]-2*Math.cos(a-.65)},${tip[1]-2*Math.sin(a-.65)}L${tip}L${tip[0]-2*Math.cos(a+.65)},${tip[1]-2*Math.sin(a+.65)}`);arrow.classList.add('trace-direction');overlay.append(arrow);
+  const dot=document.createElementNS(svgNS,'circle');dot.setAttribute('cx',start[0]);dot.setAttribute('cy',start[1]);dot.setAttribute('r','3.1');dot.classList.add('trace-start');overlay.append(dot);
+  const number=document.createElementNS(svgNS,'text');number.setAttribute('x',start[0]);number.setAttribute('y',start[1]);number.setAttribute('dy','.35em');number.classList.add('trace-start-number');number.textContent=completed+1;overlay.append(number);
+ }
+ function emit(){if(disposed)return;renderGuide();onChange(snapshot());}
+ function feedback(text,kind='neutral'){if(!disposed)onFeedback({text,kind});}
+ async function begin(){
+  if(disposed)return;
+  const ticket=++operation;watching=false;hinted=false;
+  writer.cancelQuiz();
+  await (mode==='guided'?writer.showOutline({duration:0}):writer.hideOutline({duration:0}));
+  if(disposed||ticket!==operation)return;
+  if(completed===total){await writer.showCharacter({duration:0});emit();return;}
+  await writer.quiz({
+   quizStartStrokeNum:completed,
+   onCorrectStroke(info){if(disposed||ticket!==operation)return;completed=info.strokeNum+1;hinted=false;emit();if(completed<total)feedback('Nice. '+data.instructions[completed],'correct');},
+   onMistake(info){if(disposed||ticket!==operation)return;mistakes++;hinted=info.mistakesOnStroke>=2;emit();feedback(info.isBackwards?'Try the same stroke in the arrow’s direction.':`Start at ${info.strokeNum+1}. Trace the full stroke, then lift.`,'retry');},
+   onComplete(){if(disposed||ticket!==operation)return;completed=total;emit();feedback('Beautifully written. That’s '+letter.name+'.','complete');onResult(snapshot());}
+  });
+  if(!disposed&&ticket===operation)emit();
+ }
+ const ready=begin().catch(()=>feedback('The writing surface could not load. Choose the letter again.','error'));
+ const resize=new ResizeObserver(()=>{if(disposed)return;const width=size();writer.updateDimensions({width,height:width,padding:0});});resize.observe(host);
+ const visibility=()=>{if(document.hidden)writer.pauseAnimation();else writer.resumeAnimation();};document.addEventListener('visibilitychange',visibility);
+ const mediaChange=()=>{if(disposed)return;writer._options.strokeFadeDuration=reduced.matches?0:130;writer._options.drawingFadeDuration=reduced.matches?0:160;writer._options.highlightOnComplete=!reduced.matches;if(reduced.matches&&watching){++operation;begin();}};
+ reduced.addEventListener('change',mediaChange);
+ emit();
  return {
-  clear(){stopDemo();paths=[];celebrate=0;refresh();},
-  undo(){stopDemo();paths.pop();celebrate=0;refresh();},
-  play(){pointer=null;demoStart=performance.now();paint();},
-  check(){stopDemo();refresh();if(result.pass)celebrate=performance.now();paint();onResult(result);},
-  destroy(){disposed=true;cancelAnimationFrame(frame);observer?.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',mediaChange);canvas.onpointerdown=canvas.onpointermove=canvas.onpointerup=canvas.onpointercancel=null;},
-  get paths(){return paths;}
+  ready,
+  async clear(){await ready;if(disposed)return;completed=0;mistakes=0;feedback('A fresh start. '+data.instructions[0]);return begin();},
+  async undo(){await ready;if(disposed)return;completed=Math.max(0,completed-1);feedback('Try that stroke again. '+data.instructions[completed]);return begin();},
+  async setMode(next){if(!['guided','recall'].includes(next))return;await ready;if(disposed)return;mode=next;completed=0;mistakes=0;feedback(mode==='recall'?'Write from memory. Hint is here if you need it.':data.instructions[0]);return begin();},
+  async hint(){await ready;if(disposed||watching||completed===total)return;hinted=true;emit();feedback(data.instructions[completed]);if(!reduced.matches)await writer.highlightStroke(completed);},
+  async play(){await ready;if(disposed)return;if(watching&&reduced.matches){await begin();feedback(data.instructions[Math.min(completed,total-1)]);return;}const ticket=++operation;writer.cancelQuiz();watching=true;emit();feedback('Watch each stroke. Your accepted strokes stay saved.');if(reduced.matches){await writer.showCharacter({duration:0});if(!disposed&&ticket===operation){emit();feedback('Letter preview. Choose Back to writing when you’re ready.');}return;}else await writer.animateCharacter();if(disposed||ticket!==operation)return;await begin();feedback(completed===total?'You’ve finished this letter.':data.instructions[completed]);},
+  destroy(){if(disposed)return;disposed=true;++operation;resize.disconnect();document.removeEventListener('visibilitychange',visibility);reduced.removeEventListener('change',mediaChange);writer.destroy();overlay.remove();},
+  get state(){return snapshot();}
  };
 }

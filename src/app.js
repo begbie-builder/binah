@@ -39,14 +39,13 @@ function lettersPage(){
  </section>
  <article class="trace-panel" data-feedback="idle">
  <div class="trace-letter-heading"><div class="letter-select-wrap"><label for="letter-select">CHOOSE A LETTER</label><select id="letter-select">${alphabet.map((x,i)=>`<option value="${i}" ${i===traceIndex?'selected':''}>${x.char} · ${x.name}</option>`).join('')}</select></div><button class="icon-button" data-speak="${l.he}" aria-label="Hear ${l.name}">${icon('sound')}</button></div>
- <p class="trace-hint">Follow the dots inside the letter.</p>
- <div class="trace-stage"><canvas id="trace-canvas" width="800" height="800" aria-label="Tracing canvas for ${l.name}. Follow the dots. For keyboard practice, use Practice letter names instead."></canvas><div class="trace-stage-label" aria-hidden="true">${l.name}</div></div>
- <div class="trace-live"><span id="trace-count" aria-live="off">0 checkpoints</span><span id="trace-percent">0%</span></div><progress id="trace-progress" value="0" max="100" aria-label="Letter shape coverage"></progress>
- <div class="trace-tools"><button class="text-button" id="trace-watch">${icon('repeat')} Watch</button><button class="text-button" id="trace-undo">Undo</button><button class="text-button" id="trace-clear">Clear</button></div>
- <p id="trace-result" class="trace-result" role="status">Take your time. There’s no timer.</p>
- <button class="button primary full" id="trace-check">Check my shape ${icon('check')}</button>
+ <div class="trace-practice-modes" role="group" aria-label="Writing assistance"><button data-trace-mode="guided" aria-pressed="true">Guided</button><button data-trace-mode="recall" aria-pressed="false">From memory</button></div><p class="trace-hint" id="trace-instruction" role="status" aria-atomic="true">Start at 1. Lift your finger after each stroke.</p>
+ <div class="trace-stage"><div id="trace-writer" role="img" aria-label="Writing surface for ${l.name}. Draw with a finger, pen, or mouse. For keyboard practice, use Practice letter names instead." aria-describedby="trace-instruction"></div><div class="trace-stage-label" aria-hidden="true">${l.name}</div></div>
+ <div class="trace-live"><span id="trace-count" aria-live="off">0 strokes</span><span id="trace-percent">0%</span></div><progress id="trace-progress" value="0" max="100" aria-label="Accepted writing strokes"></progress>
+ <div class="trace-tools"><button class="text-button" id="trace-watch">${icon('repeat')} Watch</button><button class="text-button" id="trace-hint">Hint</button><button class="text-button" id="trace-clear">Restart</button></div>
+ <button class="button primary full" id="trace-next" hidden>Next letter ${icon('arrow')}</button>
  <div class="trace-nav"><button class="text-button" data-letter="${(traceIndex+26)%27}">← Previous</button><span>${traceIndex+1} / 27</span><button class="text-button" data-letter="${(traceIndex+1)%27}">Next →</button></div>
- <details class="trace-guide-note"><summary>About these guides</summary><p>Exact Noto Sans Hebrew print outlines. Dots and replay demonstrate the shape, not a traditional handwriting stroke order.</p></details>
+ <details class="trace-guide-note"><summary>About these guides</summary><p>Print letters for reading signs, books, and screens. These guides teach one consistent way to form them; teachers and handwriting styles vary. For everyday handwriting, Hebrew also has cursive forms. Built with <a href="https://github.com/chanind/hanzi-writer" target="_blank" rel="noopener">Hanzi Writer</a> (MIT) and Noto Sans Hebrew (OFL).</p></details>
  </article></div>`}`;
 }
 
@@ -60,13 +59,11 @@ function bindSpeech(){document.querySelectorAll('[data-speak]').forEach(b=>b.onc
 function speak(text){if(!('speechSynthesis' in window)){toast('Audio isn’t supported here. Use the pronunciation hint below the Hebrew.');return;}const voices=speechSynthesis.getVoices(),voice=voices.find(v=>/^he(?:-|$)|^iw(?:-|$)/i.test(v.lang));if(!voice){toast('No Hebrew voice found. Add a Hebrew voice in your device’s speech settings.');return;}speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.voice=voice;utterance.lang='he-IL';utterance.rate=.8;utterance.onerror=()=>toast('Audio could not play. Try again or use the pronunciation hint.');speechSynthesis.speak(utterance);}
 function mountLetter(){
  const l=alphabet[traceIndex];
- trace=mountTrace($('#trace-canvas'),l,result=>{
-  const pass=result.pass;
-  $('.trace-panel').dataset.feedback='shown';
-  $('#trace-result').textContent=pass?'Beautifully traced. That’s '+l.name+'.':`Shape covered: ${result.coverage}%. Accuracy: ${result.precision}%. ${result.coverage<86?'Follow the remaining pale dots.':'Try keeping your ink inside the letter.'}`;
-  $('#trace-result').classList.toggle('success',pass);$('.trace-panel').classList.toggle('is-success',pass);
-  feedbackMotion($('#trace-result'),pass);if(pass)celebrateAt($('#trace-canvas'));
-  if(pass&&!progress.traced.includes(l.char)){
+ trace=mountTrace($('#trace-writer'),l,result=>{
+  $('.trace-panel').classList.add('is-success');
+  $('#trace-next').hidden=false;
+  feedbackMotion($('#trace-instruction'),true);celebrateAt($('#trace-writer'));
+  if(!progress.traced.includes(l.char)){
    progress.traced.push(l.char);progress=award(progress,5);save();
    const tile=$('.letter-tile.selected');tile?.classList.add('traced');
    if(tile&&!tile.querySelector('.tiny-check'))tile.insertAdjacentHTML('beforeend','<span class="tiny-check" aria-label="Practiced">✓</span>');
@@ -75,13 +72,23 @@ function mountLetter(){
    toast(l.name+' practiced · +5 XP');
   }
  },{onChange(result){
-  $('#trace-count').textContent=result.reached+' / '+result.total+' checkpoints';
+  $('#trace-count').textContent=result.reached+' / '+result.total+' strokes';
   $('#trace-percent').textContent=result.coverage+'%';$('#trace-progress').value=result.coverage;
+  $('#trace-instruction').textContent=result.watching?'Watch the strokes, then try it yourself.':result.pass?'All strokes complete.':result.mode==='recall'?'Write from memory. Use Hint whenever you need.':`Stroke ${result.reached+1} of ${result.total} · ${result.instruction}`;
+  $('#trace-next').hidden=!result.pass;
+  for(const button of document.querySelectorAll('[data-trace-mode]'))button.setAttribute('aria-pressed',button.dataset.traceMode===result.mode);
+  $('#trace-watch').disabled=result.watching&&!result.preview;$('#trace-watch').textContent=result.preview?'Back to writing':'Watch';$('#trace-hint').disabled=result.watching||result.pass;
+  $('.trace-panel').classList.toggle('is-success',result.pass);
+ },onFeedback({text,kind}){
+  $('.trace-panel').dataset.feedback='shown';$('#trace-instruction').textContent=text;
+  $('#trace-instruction').classList.toggle('success',kind==='complete'||kind==='correct');
+  $('#trace-instruction').dataset.kind=kind;
  }});
- $('#trace-clear').onclick=()=>{$('.trace-panel').dataset.feedback='idle';trace.clear();$('.trace-panel').classList.remove('is-success');$('#trace-result').classList.remove('success');$('#trace-result').textContent='A fresh start. Follow the pale dots.';};
- $('#trace-undo').onclick=()=>{$('.trace-panel').dataset.feedback='idle';trace.undo();$('.trace-panel').classList.remove('is-success');$('#trace-result').classList.remove('success');$('#trace-result').textContent='Last stroke undone. Keep going.';};
- $('#trace-check').onclick=()=>trace.check();
- $('#trace-watch').onclick=()=>{trace.play();$('#trace-result').textContent='Watch the moving point. Your own strokes stay saved.';};
+ $('#trace-clear').onclick=()=>trace.clear();
+ $('#trace-hint').onclick=()=>trace.hint();
+ $('#trace-watch').onclick=()=>trace.play();
+ $('#trace-next').onclick=()=>{traceIndex=(traceIndex+1)%27;render();};
+ for(const button of document.querySelectorAll('[data-trace-mode]'))button.onclick=()=>trace.setMode(button.dataset.traceMode);
 }
 
 function startLesson(id){const lesson=lessons.find(l=>l.id===id);if(!lesson)return;const available=lesson.index===0||progress.completed[lesson.id]||progress.completed[lessons[lesson.index-1].id];if(!available){toast('Complete the previous lesson to unlock this one.');return;}session={kind:'lesson',lesson,steps:makeSession(lesson,progress.form),index:-1,correct:0,graded:0,attempts:0,answered:false,chosen:null,tokens:[],results:{},finished:false};renderSession();window.scrollTo(0,0);}

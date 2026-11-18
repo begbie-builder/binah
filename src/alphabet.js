@@ -1,7 +1,8 @@
 import {letterGeometry} from './letter-geometry.js';
-// Exact font geometry supplies both the display outline and its practice routes.
-// These print-font routes teach shape; they do not claim traditional handwriting order.
-const a=(char,name,he,sound,note)=>({char,name,he,sound,note,...letterGeometry[char]});
+import {hebrewWriterData} from './hebrew-writer-data.js';
+// Exact font geometry plus deliberately authored print-letter practice strokes.
+// These are a consistent guided route, not a universal handwriting standard.
+const a=(char,name,he,sound,note)=>({char,name,he,sound,note,...letterGeometry[char],strokes:hebrewWriterData[char].practiceMedians});
 export const alphabet=[
 a('א','Alef','אָלֶף','Silent carrier / glottal stop','Often carries a vowel; it is not itself the sound “a.”'),
 a('ב','Bet / Vet','בֵּית','b / v','בּ with a dagesh is b; ב without one is v.'),

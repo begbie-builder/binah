@@ -1,24 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mountTrace} from '../src/trace.js';
-import {alphabet} from '../src/alphabet.js';
+import {PointerTarget} from '../src/vendor/hanzi-writer/hanzi-writer.js';
 
-test('pointer moves with empty coalesced events still draw; replay never contributes learner ink',()=>{
- const originals={};for(const name of ['document','matchMedia','Path2D','requestAnimationFrame','cancelAnimationFrame'])originals[name]=globalThis[name];
- let scheduled=0;
- try{
-  globalThis.document={hidden:false,addEventListener(){},removeEventListener(){}};
-  globalThis.matchMedia=()=>({matches:true,addEventListener(){},removeEventListener(){}});
-  globalThis.Path2D=class{};
-  globalThis.requestAnimationFrame=()=>{scheduled++;return scheduled;};globalThis.cancelAnimationFrame=()=>{};
-  const context=new Proxy({},{get(target,key){return target[key]||(()=>{});},set(target,key,value){target[key]=value;return true;}});
-  const canvas={width:800,isConnected:true,getContext:()=>context,getBoundingClientRect:()=>({left:0,top:0,width:100,height:100}),setPointerCapture(){}};
-  const controller=mountTrace(canvas,alphabet[0],()=>{});
-  const event=(x,y)=>({isPrimary:true,button:0,pointerId:1,clientX:x,clientY:y,getCoalescedEvents:()=>[]});
-  canvas.onpointerdown(event(30,25));canvas.onpointermove(event(50,50));canvas.onpointerup(event(70,75));
-  assert.equal(controller.paths[0].length,3);assert.deepEqual(controller.paths[0][1],[50,50]);
-  const drawn=structuredClone(controller.paths);controller.play();assert.deepEqual(controller.paths,drawn,'Replay must not write user strokes');
-  assert.equal(scheduled,0,'Reduced motion must not run an idle animation loop');
-  controller.undo();assert.equal(controller.paths.length,0);controller.destroy();assert.equal(canvas.onpointermove,null);
- }finally{for(const [name,value]of Object.entries(originals)){if(value===undefined)delete globalThis[name];else globalThis[name]=value;}}
+class Surface extends EventTarget{
+ captured=null;
+ setPointerCapture(id){this.captured=id;}
+ hasPointerCapture(id){return this.captured===id;}
+ releasePointerCapture(){this.captured=null;}
+ getBoundingClientRect(){return {left:10,top:20};}
+}
+const event=(type,x=30,y=40,extra={})=>Object.assign(new Event(type,{cancelable:true}),{isPrimary:true,button:0,pointerId:1,clientX:x,clientY:y,getCoalescedEvents:()=>[],...extra});
+test('captured pointer input handles empty/coalesced samples, final point, and disposal',()=>{
+ const node=new Surface(),target=new PointerTarget(node),points=[],ends=[];
+ target.addPointerStartListener(e=>points.push(e.getPoint()));target.addPointerMoveListener(e=>points.push(e.getPoint()));target.addPointerEndListener(e=>ends.push(e));
+ node.dispatchEvent(event('pointerdown'));assert.equal(node.captured,1);
+ node.dispatchEvent(event('pointermove',50,60));
+ node.dispatchEvent(event('pointermove',60,70,{getCoalescedEvents:()=>[{clientX:55,clientY:65},{clientX:60,clientY:70}]}));
+ node.dispatchEvent(event('pointerup',70,80));
+ assert.deepEqual(points,[{x:20,y:20},{x:40,y:40},{x:45,y:45},{x:50,y:50},{x:60,y:60}]);assert.deepEqual(ends,[{cancelled:false}]);assert.equal(node.captured,null);
+ target.disposeInput();node.dispatchEvent(event('pointerdown'));assert.equal(points.length,5,'Disposed surfaces must not retain input listeners');
+});
+test('secondary contacts are ignored and interrupted strokes are cancelled rather than graded',()=>{
+ const node=new Surface(),target=new PointerTarget(node),points=[],ends=[];
+ target.addPointerStartListener(e=>points.push(e.getPoint()));target.addPointerMoveListener(e=>points.push(e.getPoint()));target.addPointerEndListener(e=>ends.push(e));
+ node.dispatchEvent(event('pointerdown',0,0,{isPrimary:false,pointerId:2}));assert.equal(points.length,0);
+ node.dispatchEvent(event('pointerdown'));node.dispatchEvent(event('pointermove',80,90,{pointerId:2}));
+ node.dispatchEvent(event('pointercancel'));node.dispatchEvent(event('pointerup'));
+ assert.equal(points.length,1);assert.deepEqual(ends,[{cancelled:true}]);target.disposeInput();
 });

@@ -42,7 +42,7 @@ test('font-based Alef rejects the previous reversed silhouette and mirrored geom
  assert.equal(scoreTrace(alef.strokes,alef.strokes.map(s=>s.map(([x,y])=>[100-x,y]))).pass,false);
  assert.ok(alef.path.includes('Q'),'Preserve actual Bézier curves');
 });
-test('all checkpoint routes sit inside their own font bounds and preserve relative letter size',()=>{
+test('all authored print strokes sit inside font bounds and preserve relative letter size',()=>{
  for(const l of alphabet){const [x,y,w,h]=l.bounds;assert.ok(l.path.length>30);for(const stroke of l.strokes)for(const [px,py] of stroke){assert.ok(px>=x-.4&&px<=x+w+.4&&py>=y-.4&&py<=y+h+.4,l.name);}}
  const yod=alphabet.find(l=>l.char==='י'),vav=alphabet.find(l=>l.char==='ו'),lamed=alphabet.find(l=>l.char==='ל');
  assert.ok(yod.bounds[3]<vav.bounds[3]*.7,'Yod stays shorter than Vav');assert.ok(lamed.bounds[1]<vav.bounds[1],'Lamed rises above the common roof');
