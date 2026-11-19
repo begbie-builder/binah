@@ -20,6 +20,6 @@ test('manifest launches within its stable scope and supplies real opaque PNG ico
 });
 test('offline shell includes the responsive stylesheet, install controller, and Home Screen icons',async()=>{
  const worker=await readFile(new URL('../public/sw.js',import.meta.url),'utf8');
- for(const path of ['/src/responsive.css','/src/install.js','/src/hebrew-writer-data.js','/src/vendor/hanzi-writer/hanzi-writer.js','/apple-touch-icon.png','/icons/icon-192.png','/icons/icon-512.png'])assert.ok(worker.includes("'"+path+"'"),path);
+ for(const path of ['/src/responsive.css','/src/install.js','/src/game.js','/src/handwriting.js','/src/writing-course.js','/src/expansion.css','/brand-mark.svg','/src/hebrew-writer-data.js','/src/vendor/hanzi-writer/hanzi-writer.js','/apple-touch-icon.png','/icons/icon-192.png','/icons/icon-512.png'])assert.ok(worker.includes("'"+path+"'"),path);
  assert.ok(worker.includes('skipWaiting'));
 });

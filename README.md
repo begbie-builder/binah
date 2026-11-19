@@ -89,3 +89,13 @@ Engine provenance and modifications: [`src/vendor/hanzi-writer/README.md`](src/v
 To edit a Hebrew practice route, update `scripts/data/hebrew-print-strokes.json`, then run `python scripts/generate-hebrew-writer.py` (development only: fonttools and shapely >= 2.1). This partitions the detailed font contour by the nearest median and verifies that the stroke union reproduces the glyph. The generated `src/hebrew-writer-data.js` is committed; deployment needs only the usual static build.
 
 These are consistent **print-letter** practice paths. Hebrew teachers and handwriting habits vary; the app does not claim a mandatory universal stroke order or teach everyday cursive in this mode.
+
+## More conversations, more ways to practice
+
+The course now has **64 lessons, 16 units, and 256 phrase records**. The original lessons and IDs remain intact. New units add routines, plural groups, weekdays, number agreement, hotels, shopping, first past/future forms, and longer conversations. Explicit ordinary-spelling forms are used where removing niqqud would produce the wrong unpointed spelling. Sources and educator-review limits are in [COURSE_SOURCES.md](docs/COURSE_SOURCES.md).
+
+The writing tab now starts with **eight letter groups**. Learn rounds move through guided tracing, whole-letter recall and recognition; mixed tests award up to three stars and optional personal bests. Hanzi Writer remains the guidance engine, while Binah's whole-letter checks accept natural stroke order, direction and pen lifts.
+
+**Your rewards** is available by tapping the streak: levels, earned sparks, three daily quests, six milestones, and automatic streak freezes. One freeze comes equipped; earn refills with learning, with a two-freeze capacity. No hearts, purchases or ads. See [WRITING_AND_REWARDS.md](docs/WRITING_AND_REWARDS.md) for scoring, merge rules and retention boundaries.
+
+The compact **Bet + spark** mark complements the unchanged Hebrew wordmark and is used at app-icon sizes. **Google-account owners:** deploy the updated [firestore.rules](firestore.rules) to sync new rewards; until then lesson sync works with the old rules and rewards stay local. [Setup steps](docs/SETUP.md#new-rewards-update-firestore-rules-once).

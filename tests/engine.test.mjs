@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {emptyProgress,sanitize,mergeProgress,normalize,award,scheduleCard,streak,dayKey,totalXP,variant,makeSession,nextLesson} from '../src/engine.js';
+import {emptyProgress,sanitize,mergeProgress,normalize,award,scheduleCard,streak,dayKey,totalXP,variant,makeSession,nextLesson,answerMatches} from '../src/engine.js';
 import {lessons,allPhrases,units} from '../src/curriculum.js';
 import {alphabet} from '../src/alphabet.js';
 import {scoreTrace} from '../src/trace.js';
@@ -21,8 +21,8 @@ test('merge preserves progress from both devices, is idempotent, does not duplic
 test('import sanitization rejects unknown schema, clamps values, and blocks special keys',()=>{
  assert.deepEqual(sanitize({version:99}),emptyProgress());const raw=JSON.parse('{"version":1,"name":"<script>","cards":{"__proto__":{"box":1,"due":1,"updatedAt":1}},"activity":{"bad":8,"2026-01-01":-3},"traced":["א","א","bad"],"form":"unexpected"}');const p=sanitize(raw);assert.equal(p.form,'m');assert.deepEqual(p.traced,['א']);assert.deepEqual(p.activity,{});assert.equal(Object.getPrototypeOf(p.cards),Object.prototype);assert.equal(p.name,'<script>');
 });
-test('all 32 lessons are connected, fully playable, and have unambiguous answer sets',()=>{
- assert.equal(lessons.length,32);assert.equal(units.length,8);assert.equal(allPhrases.length,128);assert.equal(new Set(allPhrases.map(x=>x.id)).size,128);assert.equal(new Set(lessons.map(x=>x.id)).size,32);
+test('all 64 lessons are connected, fully playable, and have unambiguous answer sets',()=>{
+ assert.equal(lessons.length,64);assert.equal(units.length,16);assert.equal(allPhrases.length,256);assert.equal(new Set(allPhrases.map(x=>x.id)).size,256);assert.equal(new Set(lessons.map(x=>x.id)).size,64);
  for(const l of lessons){assert.ok(units.some(u=>u.id===l.unit));assert.equal(l.phrases.length,4);for(const form of ['m','f']){const steps=makeSession(l,form);assert.equal(steps.length,11);for(const s of steps){if(s.options){assert.equal(new Set(s.options).size,s.options.length);assert.ok(s.options.includes(s.answer));}if(s.type==='build')assert.equal(normalize(s.tokens.join(' ').split(' ').sort().join(' ')),normalize(s.answer.split(' ').sort().join(' ')));}}}
  assert.equal(nextLesson(lessons,emptyProgress()).id,'hello');assert.equal(nextLesson(lessons,{completed:{hello:1}}).id,'name');
 });
@@ -46,4 +46,10 @@ test('all authored print strokes sit inside font bounds and preserve relative le
  for(const l of alphabet){const [x,y,w,h]=l.bounds;assert.ok(l.path.length>30);for(const stroke of l.strokes)for(const [px,py] of stroke){assert.ok(px>=x-.4&&px<=x+w+.4&&py>=y-.4&&py<=y+h+.4,l.name);}}
  const yod=alphabet.find(l=>l.char==='י'),vav=alphabet.find(l=>l.char==='ו'),lamed=alphabet.find(l=>l.char==='ל');
  assert.ok(yod.bounds[3]<vav.bounds[3]*.7,'Yod stays shorter than Vav');assert.ok(lamed.bounds[1]<vav.bounds[1],'Lamed rises above the common roof');
+});
+test('expanded lesson variants include clean ordinary spellings and every exercise retains the phrase identity',()=>{
+ for(const l of lessons.slice(32))for(const form of ['m','f']){
+  for(const p of l.phrases.map(p=>variant(p,form))){assert.equal(typeof p.unpointed,'string',p.id);assert.ok(p.unpointed.length>0);assert.doesNotMatch(p.unpointed,/[\u0591-\u05c7]/);}
+  for(const step of makeSession(l,form))if(step.phrase){assert.ok(l.phrases.some(p=>p.id===step.phrase.id));if(step.type==='type'){assert.equal(answerMatches(step,step.phrase.unpointed),true);assert.equal(answerMatches(step,'לא אותה תשובה'),false);}}
+ }
 });

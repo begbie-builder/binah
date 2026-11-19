@@ -108,3 +108,15 @@ Open the deployed site in Safari, tap **Share → Add to Home Screen**, keep **O
 The website cannot silently add itself to iOS Home Screens; Safari handles the installation. Home Screen app state and ordinary Safari state can be separate. Google sync or an exported progress backup lets a learner move progress across those contexts. The icon PNGs are committed and copied by the normal build; Cloudflare needs no image-processing dependency.
 
 Official references: [Apple's iPhone instructions](https://support.apple.com/en-ca/guide/iphone/iphea86e5236/27/ios/27), [WebKit Home Screen app behavior](https://webkit.org/blog/13878/), and [WebKit safe-area guidance](https://webkit.org/blog/7929/designing-websites-for-iphone-x/).
+
+## New rewards: update Firestore rules once
+
+The expanded app adds an optional `progress.game` map for streak freezes, daily quests, and writing stars. Guest accounts need no setup.
+
+For Google accounts, publish the repository's updated `firestore.rules` in **Firebase console → Firestore Database → Rules → Publish**, or run:
+
+```sh
+firebase deploy --only firestore:rules --project binah-a5d15
+```
+
+The rules still allow only the signed-in owner to read or write their record; they accept old progress records as well as the optional new rewards map. Until the update is published, the app retries a rejected rewards write using the older lesson-progress shape. Lessons keep syncing; rewards remain saved on that device, and Your space explains the limitation. After the rules update, use **Sync now** to merge local rewards into the account. Keep a progress export before switching devices. Firebase rule deployment has not been performed from this workspace.

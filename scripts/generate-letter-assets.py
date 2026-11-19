@@ -122,8 +122,5 @@ for c,x,w in positions:
 logo_width=int(positions[-1][1]+positions[-1][2]+10)
 body=''.join(f'<path d="{p}"/>' for p in paths)+''.join(marks)
 (ROOT/'public/logo-hebrew.svg').write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -20 {logo_width} 845" role="img" aria-label="בִּינָה"><g fill="#254d43">{body}</g></svg>\n')
-# Preserve the wordmark aspect ratio; leave space for the system icon mask.
-# Full-bleed square background: iOS supplies its own rounded corners.
-icon_scale=168/logo_width
-icon_top=(192-845*icon_scale)/2
-(ROOT/'public/icon.svg').write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#254d43"/><g transform="translate(12 {icon_top:.5f}) scale({icon_scale:.7f}) translate(0 20)" fill="#f6f4ed">{body}</g></svg>\n')
+# Compact app icons are maintained separately in public/app-icon.svg.
+# Keep the wordmark export independent of that companion mark.

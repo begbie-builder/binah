@@ -9,7 +9,7 @@ service cloud.firestore {
       let p = data.progress;
       return data.keys().hasOnly(['progress', 'updatedAt'])
         && data.updatedAt == request.time
-        && p.keys().hasOnly(['version','name','form','transliteration','vowels','goal','completed','cards','traced','activity','updatedAt'])
+        && p.keys().hasOnly(['version','name','form','transliteration','vowels','goal','completed','cards','traced','activity','game','updatedAt'])
         && p.version == 1
         && p.name is string && p.name.size() <= 60
         && p.form in ['m','f']
@@ -19,7 +19,15 @@ service cloud.firestore {
         && p.cards is map && p.cards.size() <= 1000
         && p.traced is list && p.traced.size() <= 27
         && p.activity is map && p.activity.size() <= 730
-        && p.updatedAt is number;
+        && p.updatedAt is number
+        && (!('game' in p) || (p.game is map
+          && p.game.keys().hasOnly(['version','startedAt','checkedThrough','purchases','freezes','days','writing'])
+          && p.game.version == 1
+          && p.game.startedAt is number && p.game.checkedThrough is string
+          && p.game.purchases is map && p.game.purchases.size() <= 1000
+          && p.game.freezes is map && p.game.freezes.size() <= 730
+          && p.game.days is map && p.game.days.size() <= 730
+          && p.game.writing is map && p.game.writing.size() <= 40));
     }
     match /users/{uid} {
       allow get: if owner(uid);
