@@ -640,7 +640,7 @@ h1,h2,h3,.lesson-info,.feedback,.phrase-card,.account-card{overflow-wrap:anywher
  .trace-letter-glyph{display:grid;place-items:center;width:42px;height:44px;border-radius:12px;background:#edf2e7;color:#254d43;font-family:Arial,sans-serif;font-size:27px;line-height:1}
  .trace-letter-sound{display:flex;flex-direction:column;gap:3px;min-width:0;color:#718266}
  .trace-letter-sound>span{font-size:8px;letter-spacing:.8px;white-space:nowrap}
- .trace-letter-sound>strong{font-size:13px;line-height:1.2;white-space:nowrap}
+ .trace-letter-sound>strong{font-size:12px;line-height:1.25;max-width:104px;white-space:normal;overflow-wrap:anywhere}
  .trace-letter-heading>.icon-button{grid-column:4;grid-row:1}
  .letter-select-wrap{grid-column:2;grid-row:1}
  .letter-select-wrap select{min-width:0;width:100%;font-size:15px;padding:9px 8px}
