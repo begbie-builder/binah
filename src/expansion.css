@@ -22,3 +22,25 @@
 @media(max-width:1200px){.rewards-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:767px){.rewards-overview{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
 .reward-level progress,.daily-quest progress{display:block;width:100%;max-width:100%}
+
+
+/* Independent typing practice and compact letter pronunciation. */
+.practice-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.letter-select-wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px}
+.letter-select-wrap label{grid-column:1/-1}
+.letter-select-wrap select{min-width:0}
+.letter-sound-inline{display:block;max-width:120px;color:#718267;font-size:13px;line-height:1.3;text-align:right;white-space:normal}
+@media(max-width:1200px){.practice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:767px){
+ .practice-grid{grid-template-columns:1fr}
+ .topbar{height:calc(64px + var(--safe-top));min-height:calc(64px + var(--safe-top));padding:var(--safe-top) max(16px,var(--safe-right)) 0 max(16px,var(--safe-left));align-items:center;flex-shrink:0}
+ .mobile-brand,.top-stats{filter:none;backdrop-filter:none;-webkit-backdrop-filter:none;opacity:1}
+ .mobile-brand img{width:44px;height:26px;object-fit:contain}
+ .top-stats{min-width:0;gap:clamp(8px,2.5vw,12px)}
+ .profile-dot{flex:0 0 44px}
+ .letter-select-wrap{grid-template-columns:minmax(0,1fr) auto;gap:5px 8px}
+ .letter-select-wrap label{display:none}
+ .letter-sound-inline{max-width:105px;font-size:12px}
+ .trace-letter-heading{align-items:center;gap:8px}
+ .trace-letter-heading>.icon-button{flex:0 0 44px}
+}
