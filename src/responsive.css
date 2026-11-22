@@ -661,3 +661,36 @@ h1,h2,h3,.lesson-info,.feedback,.phrase-card,.account-card{overflow-wrap:anywher
  .practice-card h2{font-size:23px}
  .practice-card p{font-size:12px}
 }
+
+/* Independent typing practice: random deck or a searchable custom selection. */
+.typing-entry-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.typing-entry-actions .button{flex:1;min-width:180px}
+.typing-browser{background:#fff;border-radius:22px;padding:26px;margin:24px 0 30px;max-width:100%}
+.typing-browser[hidden]{display:none}
+.typing-browser-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.typing-browser-heading h2{font-size:22px;margin:8px 0}
+.typing-browser-heading p{font-size:12px;color:#84917a;line-height:1.7;margin:0 0 18px}
+.typing-browser .search-field{margin:12px 0 14px}
+.typing-filter-row{display:flex;gap:8px;margin:14px 0}
+.typing-filter{padding:9px 16px;border-radius:10px;background:#f0f3eb;color:#68795d;font-size:12px}
+.typing-filter.active{background:#244f43;color:#fff}
+.typing-selection-status{display:flex;justify-content:space-between;gap:12px;color:#87947c;font-size:10px;margin:17px 0 10px}
+.typing-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-height:470px;overflow:auto;padding:2px 4px 14px 0}
+.typing-choice{display:flex;align-items:center;gap:10px;min-width:0;background:#f4f6f0;border:1px solid transparent;border-radius:13px;padding:12px;cursor:pointer}
+.typing-choice.selected{background:#edf3e7;border-color:#9eb58a}
+.typing-choice>input{width:17px;height:17px;accent-color:#285448;flex-shrink:0}
+.typing-choice-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.typing-choice-copy strong{font-family:Arial,sans-serif;font-size:22px;font-weight:500;color:#294d42;line-height:1.35}
+.typing-choice-copy small{font-size:11px;color:#455b4c;line-height:1.35}
+.typing-choice-copy em{font-size:9px;color:#909b85;font-style:normal;overflow-wrap:anywhere}
+.typing-choice .icon-button{padding:6px;flex-shrink:0}
+.typing-choice .icon-button .icon{width:15px}
+.typing-browser>.button{margin-top:12px}
+@media(max-width:720px){
+ .typing-browser{padding:19px;margin:18px 0 25px}
+ .typing-browser-heading h2{font-size:19px}
+ .typing-choice-grid{grid-template-columns:1fr;max-height:420px}
+ .typing-choice{padding:10px 12px}
+ .typing-entry-actions{flex-direction:column}
+ .typing-entry-actions .button{width:100%}
+}
