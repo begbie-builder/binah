@@ -678,7 +678,7 @@ h1,h2,h3,.lesson-info,.feedback,.phrase-card,.account-card{overflow-wrap:anywher
 .typing-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-height:470px;overflow:auto;padding:2px 4px 14px 0}
 .typing-choice{display:flex;align-items:center;gap:10px;min-width:0;background:#f4f6f0;border:1px solid transparent;border-radius:13px;padding:12px;cursor:pointer}
 .typing-choice.selected{background:#edf3e7;border-color:#9eb58a}
-.typing-choice>input{width:17px;height:17px;accent-color:#285448;flex-shrink:0}
+.typing-choice-select{display:flex;align-items:center;gap:10px;min-width:0;flex:1;cursor:pointer}.typing-choice-select>input{width:17px;height:17px;accent-color:#285448;flex-shrink:0}
 .typing-choice-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
 .typing-choice-copy strong{font-family:Arial,sans-serif;font-size:22px;font-weight:500;color:#294d42;line-height:1.35}
 .typing-choice-copy small{font-size:11px;color:#455b4c;line-height:1.35}
