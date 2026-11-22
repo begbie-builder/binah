@@ -627,3 +627,37 @@ h1,h2,h3,.lesson-info,.feedback,.phrase-card,.account-card{overflow-wrap:anywher
 @media(max-width:767px) and (max-height:700px){.trace-live{margin-top:2px}}
 @media(min-width:768px) and (max-height:500px){#app[data-view=letters] .page-main{padding-bottom:0}}
 @media(min-width:768px) and (max-height:500px){.trace-stage{width:min(100%,45vh,180px)}}
+
+/* Focused phone fit: reserve the full safe-area header instead of compressing its contents. */
+@media(max-width:767px){
+ .topbar{height:auto;min-height:calc(64px + var(--safe-top));padding:var(--safe-top) max(16px,var(--safe-right)) 8px max(16px,var(--safe-left));align-items:center;box-sizing:border-box;overflow:visible}
+ .mobile-brand,.top-stats,.profile-dot{flex-shrink:0}
+ .mobile-brand{min-height:46px}
+ .top-stats{gap:clamp(8px,2.8vw,12px)}
+ .top-stats>span{white-space:nowrap}
+ .profile-dot{width:44px;height:44px}
+ .trace-letter-heading{display:grid;grid-template-columns:42px minmax(0,1fr) auto 44px;align-items:center;gap:9px}
+ .trace-letter-glyph{display:grid;place-items:center;width:42px;height:44px;border-radius:12px;background:#edf2e7;color:#254d43;font-family:Arial,sans-serif;font-size:27px;line-height:1}
+ .trace-letter-sound{display:flex;flex-direction:column;gap:3px;min-width:0;color:#718266}
+ .trace-letter-sound>span{font-size:8px;letter-spacing:.8px;white-space:nowrap}
+ .trace-letter-sound>strong{font-size:12px;line-height:1.25;max-width:104px;white-space:normal;overflow-wrap:anywhere}
+ .trace-letter-heading>.icon-button{grid-column:4;grid-row:1}
+ .letter-select-wrap{grid-column:2;grid-row:1}
+ .letter-select-wrap select{min-width:0;width:100%;font-size:15px;padding:9px 8px}
+}
+@media(max-width:370px){
+ .trace-letter-heading{grid-template-columns:38px minmax(0,1fr) auto 42px;gap:6px}
+ .trace-letter-glyph{width:38px;height:42px}
+ .trace-letter-sound>strong{font-size:12px}
+}
+@media(min-width:768px){
+ .trace-letter-glyph{display:grid;place-items:center;width:46px;height:46px;flex-shrink:0;border-radius:13px;background:#edf2e7;color:#254d43;font-family:Arial,sans-serif;font-size:29px}
+ .trace-letter-sound{display:flex;flex-direction:column;gap:4px;margin-left:auto;color:#718266}
+ .trace-letter-sound>span{font-size:8px;letter-spacing:1px}
+ .trace-letter-sound>strong{font-size:14px}
+ .trace-letter-heading{gap:12px}
+ .practice-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+ .practice-card{padding:24px;min-width:0}
+ .practice-card h2{font-size:23px}
+ .practice-card p{font-size:12px}
+}
