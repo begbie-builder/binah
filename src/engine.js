@@ -48,3 +48,16 @@ export function nextLesson(lessons,p){return lessons.find(x=>!p.completed[x.id])
 export function answerMatches(step,value,ordinary=step.phrase?.unpointed){
  return normalize(value)===normalize(step.answer)||(step.type==='type'&&typeof ordinary==='string'&&normalize(value)===normalize(ordinary));
 }
+export function typeGhostTarget(phrase){
+ if(!phrase) return '';
+ if(typeof phrase.unpointed==='string'&&phrase.unpointed.trim()) return phrase.unpointed.trim();
+ return normalize(phrase.he||'');
+}
+const cleanTypeText=text=>String(text).normalize('NFD').replace(/[\u0591-\u05C7]/g,'').replace(/[.,!?…״׳'\"־–—:;،]/g,'');
+export function nextTypeChar(target,typed){
+ const cleanTarget=cleanTypeText(target||'').trim();
+ const cleanTyped=cleanTypeText(typed||'');
+ let i=0;
+ while(i<cleanTarget.length&&i<cleanTyped.length&&cleanTarget[i]===cleanTyped[i]) i++;
+ return i<cleanTarget.length?cleanTarget[i]:'';
+}

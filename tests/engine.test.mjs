@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {emptyProgress,sanitize,mergeProgress,normalize,award,scheduleCard,streak,dayKey,totalXP,variant,makeSession,nextLesson,answerMatches} from '../src/engine.js';
+import {emptyProgress,sanitize,mergeProgress,normalize,award,scheduleCard,streak,dayKey,totalXP,variant,makeSession,nextLesson,answerMatches,typeGhostTarget,nextTypeChar} from '../src/engine.js';
 import {lessons,allPhrases,units} from '../src/curriculum.js';
 import {alphabet} from '../src/alphabet.js';
 import {scoreTrace} from '../src/trace.js';
@@ -52,4 +52,17 @@ test('expanded lesson variants include clean ordinary spellings and every exerci
   for(const p of l.phrases.map(p=>variant(p,form))){assert.equal(typeof p.unpointed,'string',p.id);assert.ok(p.unpointed.length>0);assert.doesNotMatch(p.unpointed,/[\u0591-\u05c7]/);}
   for(const step of makeSession(l,form))if(step.phrase){assert.ok(l.phrases.some(p=>p.id===step.phrase.id));if(step.type==='type'){assert.equal(answerMatches(step,step.phrase.unpointed),true);assert.equal(answerMatches(step,'לא אותה תשובה'),false);}}
  }
+});
+
+test('guided typing ghost shows the ordinary spelling and the next key follows typed input',()=>{
+ assert.equal(typeGhostTarget({he:'בּוֹקֶר טוֹב',unpointed:'בוקר טוב'}),'בוקר טוב');
+ assert.equal(typeGhostTarget({he:'שָׁלוֹם'}),'שלום');
+ assert.equal(typeGhostTarget({he:'בוקר טוב'}),'בוקר טוב');
+ assert.equal(nextTypeChar('בוקר טוב',''),'ב');
+ assert.equal(nextTypeChar('בוקר טוב','בו'),'ק');
+ assert.equal(nextTypeChar('בוקר טוב','בוקר'),' ');
+ assert.equal(nextTypeChar('בוקר טוב','בוקר '),'ט');
+ assert.equal(nextTypeChar('בוקר טוב','בוקר טוב'),'');
+ assert.equal(nextTypeChar('בוקר טוב','בוק'),'ר');
+ assert.equal(nextTypeChar('בוקר טוב','בוקx'),'ר');
 });

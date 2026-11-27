@@ -73,3 +73,11 @@
 .brand-word{font-size:32px;line-height:34px;align-self:start;transform:translateY(-3px)}
 @media(max-width:1200px){.brand-word{font-size:28px;line-height:32px;transform:translateY(-2px)}}
 @media(max-width:1020px){.brand-word{font-size:25px;line-height:30px;transform:translateY(-2px)}}
+
+/* Guided typing: faint ghost phrase in the input, next-key highlight on the keyboard. */
+.type-field{position:relative;background:#fff;border-radius:13px}
+.type-field .hebrew-input{position:relative;background:transparent}
+.type-ghost{position:absolute;inset:0;display:flex;align-items:center;padding:22px;font-family:'Binah Hebrew',Arial,sans-serif;font-size:32px;line-height:1.3;color:#263b34;opacity:.28;pointer-events:none;white-space:pre-wrap;overflow:hidden}
+.type-mode{margin-bottom:14px}
+.hebrew-keyboard button.next-key{background:#254d43;color:#fff;outline:3px solid #a2682d;outline-offset:2px}
+@media(max-width:720px){.type-ghost{font-size:29px;padding:16px 18px}}
